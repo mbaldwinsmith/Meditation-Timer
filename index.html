@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#f0e9dc" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#13141c" media="(prefers-color-scheme: dark)" />
+<title>Stillpoint — a meditation timer</title>
+<meta name="description" content="A minimal, beautiful meditation timer. Open source, offline-first." />
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" href="./icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="./icon-512.png" />
+
+<!-- Inline theme resolution: runs before paint to prevent flash. -->
+<script>
+  (function () {
+    try {
+      var stored = localStorage.getItem('stillpoint-theme'); // 'light' | 'dark' | null
+      var theme = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = theme;
+    } catch (e) {
+      document.documentElement.dataset.theme = 'light';
+    }
+  })();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1 class="wordmark">Stillpoint</h1>
+    <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle theme">
+      <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" />
+        <g stroke-linecap="round">
+          <line x1="12" y1="2" x2="12" y2="5" />
+          <line x1="12" y1="19" x2="12" y2="22" />
+          <line x1="2" y1="12" x2="5" y2="12" />
+          <line x1="19" y1="12" x2="22" y2="12" />
+          <line x1="4.5" y1="4.5" x2="6.6" y2="6.6" />
+          <line x1="17.4" y1="17.4" x2="19.5" y2="19.5" />
+          <line x1="4.5" y1="19.5" x2="6.6" y2="17.4" />
+          <line x1="17.4" y1="6.6" x2="19.5" y2="4.5" />
+        </g>
+      </svg>
+      <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
+      </svg>
+    </button>
+  </header>
+
+  <main class="stage">
+    <div class="timer" role="group" aria-label="Meditation timer">
+      <svg class="dial" viewBox="0 0 200 200" aria-hidden="true">
+        <!-- Outer faint ring -->
+        <circle class="dial-track" cx="100" cy="100" r="92" />
+        <!-- Outer progress arc: starts full, depletes as time passes -->
+        <circle id="dialProgress" class="dial-progress" cx="100" cy="100" r="92" />
+        <!-- Inner button circle -->
+        <circle id="dialButton" class="dial-button" cx="100" cy="100" r="62" tabindex="0" role="button" aria-label="Start or pause timer" />
+      </svg>
+
+      <div class="readout" aria-live="polite">
+        <span id="time" class="time">10:00</span>
+        <span id="hint" class="hint">tap to begin</span>
+      </div>
+    </div>
+
+    <div class="durations" role="radiogroup" aria-label="Duration">
+      <button class="chip" type="button" data-minutes="5">5</button>
+      <button class="chip is-active" type="button" data-minutes="10">10</button>
+      <button class="chip" type="button" data-minutes="15">15</button>
+      <button class="chip" type="button" data-minutes="20">20</button>
+      <button class="chip" type="button" data-minutes="30">30</button>
+      <label class="chip chip-custom">
+        <input id="customMinutes" type="number" min="1" max="180" inputmode="numeric" placeholder="custom" />
+        <span class="chip-custom-unit">min</span>
+      </label>
+    </div>
+
+    <button id="resetBtn" class="reset" type="button" aria-label="Reset timer" hidden>reset</button>
+  </main>
+
+  <footer class="footer">
+    <span>made for stillness</span>
+    <a href="https://github.com/" target="_blank" rel="noopener noreferrer">source</a>
+  </footer>
+
+  <script type="module" src="./app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('./sw.js').catch(function () {});
+      });
+    }
+  </script>
+</body>
+</html>

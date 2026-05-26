@@ -1,0 +1,378 @@
+/* Stillpoint — meditation timer
+ * MIT License
+ */
+
+:root {
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[data-theme='light'] {
+  --bg: #f0e9dc;
+  --bg-grain: rgba(0, 0, 0, 0.015);
+  --ink: #2a2520;
+  --ink-soft: #6b6258;
+  --ink-faint: #b3aa9c;
+  --accent: #8a6f4a;
+  --track: rgba(42, 37, 32, 0.08);
+  --button-fill: #e6dcc8;
+  --button-hover: #dccfb5;
+  --button-stroke: rgba(42, 37, 32, 0.06);
+  --chip-bg: transparent;
+  --chip-active-bg: rgba(42, 37, 32, 0.06);
+  --chip-border: rgba(42, 37, 32, 0.15);
+}
+
+:root[data-theme='dark'] {
+  --bg: #13141c;
+  --bg-grain: rgba(255, 255, 255, 0.012);
+  --ink: #e8e4dd;
+  --ink-soft: #a8a39a;
+  --ink-faint: #5a5d6e;
+  --accent: #c9b48a;
+  --track: rgba(232, 228, 221, 0.06);
+  --button-fill: #1c1e29;
+  --button-hover: #232636;
+  --button-stroke: rgba(232, 228, 221, 0.04);
+  --chip-bg: transparent;
+  --chip-active-bg: rgba(232, 228, 221, 0.07);
+  --chip-border: rgba(232, 228, 221, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  transition: background-color 600ms var(--ease), color 600ms var(--ease);
+  overflow: hidden;
+}
+
+/* Subtle grain texture for warmth */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle at 1px 1px, var(--bg-grain) 1px, transparent 0);
+  background-size: 3px 3px;
+  opacity: 0.6;
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.wordmark {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400;
+  font-size: 1.25rem;
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--chip-border);
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--ink-soft);
+  transition: color 300ms var(--ease), border-color 300ms var(--ease), background-color 300ms var(--ease);
+}
+
+.theme-toggle:hover {
+  color: var(--ink);
+  background: var(--chip-active-bg);
+}
+
+.theme-toggle .icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  transition: opacity 300ms var(--ease), transform 400ms var(--ease);
+  position: absolute;
+}
+
+:root[data-theme='light'] .icon-moon,
+:root[data-theme='dark'] .icon-sun {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.5);
+}
+
+:root[data-theme='light'] .icon-sun,
+:root[data-theme='dark'] .icon-moon {
+  opacity: 1;
+  transform: rotate(0) scale(1);
+}
+
+/* Stage */
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  padding: 1rem 2rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Timer */
+.timer {
+  position: relative;
+  width: min(78vw, 78vh, 420px);
+  aspect-ratio: 1;
+}
+
+.dial {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.dial-track {
+  fill: none;
+  stroke: var(--track);
+  stroke-width: 1.5;
+}
+
+.dial-progress {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  /* Circumference of r=92 is ~578.05 */
+  stroke-dasharray: 578.05;
+  stroke-dashoffset: 0;
+  transform: rotate(-90deg);
+  transform-origin: 100px 100px;
+  transition: stroke 600ms var(--ease);
+  opacity: 0.85;
+}
+
+.dial-button {
+  fill: var(--button-fill);
+  stroke: var(--button-stroke);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: fill 400ms var(--ease), stroke 400ms var(--ease), transform 400ms var(--ease);
+  transform-origin: 100px 100px;
+}
+
+.dial-button:hover,
+.dial-button:focus-visible {
+  fill: var(--button-hover);
+  outline: none;
+}
+
+.timer.is-running .dial-button {
+  animation: breathe 8s var(--ease) infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.025); }
+}
+
+/* Readout overlaid on the inner circle */
+.readout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  gap: 0.5rem;
+}
+
+.time {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(2.75rem, 9vw, 4.5rem);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  transition: color 600ms var(--ease);
+}
+
+.hint {
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color 600ms var(--ease), opacity 400ms var(--ease);
+}
+
+.timer.is-running .hint {
+  opacity: 0;
+}
+
+/* Duration chips */
+.durations {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  transition: opacity 400ms var(--ease);
+}
+
+.timer.is-running ~ .durations {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.chip {
+  appearance: none;
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
+  color: var(--ink-soft);
+  font-family: inherit;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 250ms var(--ease), color 250ms var(--ease), border-color 250ms var(--ease);
+  min-width: 2.5rem;
+}
+
+.chip:hover {
+  color: var(--ink);
+  background: var(--chip-active-bg);
+}
+
+.chip.is-active {
+  background: var(--chip-active-bg);
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.chip-custom {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.7rem;
+}
+
+.chip-custom input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  width: 3rem;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+
+.chip-custom input::-webkit-outer-spin-button,
+.chip-custom input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.chip-custom input::placeholder {
+  color: var(--ink-faint);
+}
+
+.chip-custom-unit {
+  color: var(--ink-faint);
+  font-size: 0.75rem;
+}
+
+/* Reset button */
+.reset {
+  background: transparent;
+  border: none;
+  color: var(--ink-faint);
+  font-family: inherit;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  transition: color 250ms var(--ease);
+}
+
+.reset:hover {
+  color: var(--ink-soft);
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+  color: var(--ink-faint);
+  position: relative;
+  z-index: 1;
+}
+
+.footer a {
+  color: var(--ink-faint);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 250ms var(--ease), border-color 250ms var(--ease);
+}
+
+.footer a:hover {
+  color: var(--ink-soft);
+  border-bottom-color: var(--ink-faint);
+}
+
+/* Completion pulse */
+.timer.is-complete .dial-button {
+  animation: complete-pulse 2.4s var(--ease) 3;
+}
+
+@keyframes complete-pulse {
+  0%, 100% { fill: var(--button-fill); }
+  50% { fill: var(--accent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 200ms !important;
+  }
+}
