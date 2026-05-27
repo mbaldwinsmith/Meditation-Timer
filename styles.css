@@ -328,7 +328,14 @@ body::before {
   text-transform: uppercase;
   cursor: pointer;
   padding: 0.5rem 1rem;
-  transition: color 250ms var(--ease);
+  opacity: 0;
+  pointer-events: none;
+  transition: color 250ms var(--ease), opacity 400ms var(--ease);
+}
+
+.reset.is-visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .reset:hover {

@@ -63,7 +63,7 @@ function start() {
   state.endAt = performance.now() + state.remainingMs;
   els.timer.classList.add('is-running');
   els.timer.classList.remove('is-complete');
-  els.resetBtn.hidden = false;
+  els.resetBtn.classList.add('is-visible');
   els.dialButton.setAttribute('aria-label', 'Pause timer');
   els.hint.style.opacity = ''; // let CSS class control visibility again
   state.rafId = requestAnimationFrame(tick);
@@ -96,7 +96,7 @@ function reset() {
   els.hint.textContent = 'tap to begin';
   els.hint.style.opacity = '';
   els.dialButton.setAttribute('aria-label', 'Start timer');
-  els.resetBtn.hidden = true;
+  els.resetBtn.classList.remove('is-visible');
   render();
 }
 
