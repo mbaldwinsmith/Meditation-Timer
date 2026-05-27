@@ -65,6 +65,7 @@ function start() {
   els.timer.classList.remove('is-complete');
   els.resetBtn.hidden = false;
   els.dialButton.setAttribute('aria-label', 'Pause timer');
+  els.hint.style.opacity = ''; // let CSS class control visibility again
   state.rafId = requestAnimationFrame(tick);
 }
 

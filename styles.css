@@ -177,7 +177,7 @@ body::before {
   /* Circumference of r=92 is ~578.05 */
   stroke-dasharray: 578.05;
   stroke-dashoffset: 0;
-  transform: rotate(-90deg);
+  transform: rotate(-90deg) scaleX(-1);
   transform-origin: 100px 100px;
   transition: stroke 600ms var(--ease);
   opacity: 0.85;
@@ -188,6 +188,7 @@ body::before {
   stroke: var(--button-stroke);
   stroke-width: 1;
   cursor: pointer;
+  outline: none;
   transition: fill 400ms var(--ease), stroke 400ms var(--ease), transform 400ms var(--ease);
   transform-origin: 100px 100px;
 }
