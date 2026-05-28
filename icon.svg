@@ -2,7 +2,7 @@
   <rect width="512" height="512" rx="96" fill="#f0e9dc"/>
   <circle cx="256" cy="256" r="180" fill="none" stroke="rgba(42,37,32,0.08)" stroke-width="4"/>
   <circle cx="256" cy="256" r="180" fill="none" stroke="#8a6f4a" stroke-width="6" stroke-linecap="round"
-          stroke-dasharray="1130.97" stroke-dashoffset="282.74"
+          stroke-dasharray="1130.97" stroke-dashoffset="-282.74"
           transform="rotate(-90 256 256)"/>
   <circle cx="256" cy="256" r="120" fill="#e6dcc8"/>
   <circle cx="256" cy="256" r="14" fill="#2a2520"/>
