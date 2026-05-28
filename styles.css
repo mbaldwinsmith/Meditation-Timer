@@ -13,13 +13,14 @@
   --ink-soft: #6b6258;
   --ink-faint: #b3aa9c;
   --accent: #8a6f4a;
-  --track: rgba(42, 37, 32, 0.08);
+  --track: rgba(42, 37, 32, 0.12);
   --button-fill: #e6dcc8;
   --button-hover: #dccfb5;
   --button-stroke: rgba(42, 37, 32, 0.06);
   --chip-bg: transparent;
   --chip-active-bg: rgba(42, 37, 32, 0.06);
   --chip-border: rgba(42, 37, 32, 0.15);
+  --chip-active-border: rgba(138, 111, 74, 0.5);
 }
 
 :root[data-theme='dark'] {
@@ -29,13 +30,14 @@
   --ink-soft: #a8a39a;
   --ink-faint: #5a5d6e;
   --accent: #c9b48a;
-  --track: rgba(232, 228, 221, 0.06);
+  --track: rgba(232, 228, 221, 0.09);
   --button-fill: #1c1e29;
   --button-hover: #232636;
   --button-stroke: rgba(232, 228, 221, 0.04);
   --chip-bg: transparent;
   --chip-active-bg: rgba(232, 228, 221, 0.07);
   --chip-border: rgba(232, 228, 221, 0.14);
+  --chip-active-border: rgba(201, 180, 138, 0.5);
 }
 
 * {
@@ -166,21 +168,32 @@ body::before {
 .dial-track {
   fill: none;
   stroke: var(--track);
-  stroke-width: 1.5;
+  stroke-width: 1;
 }
 
 .dial-progress {
   fill: none;
   stroke: var(--accent);
-  stroke-width: 2;
+  stroke-width: 2.5;
   stroke-linecap: round;
   /* Circumference of r=92 is ~578.05 */
   stroke-dasharray: 578.05;
   stroke-dashoffset: 0;
   transform: rotate(-90deg);
   transform-origin: 100px 100px;
-  transition: stroke 600ms var(--ease);
-  opacity: 0.85;
+  transition: stroke 600ms var(--ease), filter 600ms var(--ease);
+  opacity: 0.9;
+}
+
+:root[data-theme='dark'] .dial-progress {
+  filter: drop-shadow(0 0 7px rgba(201, 180, 138, 0.35));
+}
+
+.dial-marker {
+  fill: var(--accent);
+  opacity: 0.45;
+  transition: opacity 600ms var(--ease), fill 600ms var(--ease);
+  pointer-events: none;
 }
 
 .dial-button {
@@ -205,7 +218,7 @@ body::before {
 
 @keyframes breathe {
   0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.025); }
+  50% { transform: scale(1.035); }
 }
 
 /* Readout overlaid on the inner circle */
@@ -280,7 +293,11 @@ body::before {
 .chip.is-active {
   background: var(--chip-active-bg);
   color: var(--ink);
-  border-color: transparent;
+  border-color: var(--chip-active-border);
+}
+
+.chip:active {
+  transform: scale(0.94);
 }
 
 .chip-custom {

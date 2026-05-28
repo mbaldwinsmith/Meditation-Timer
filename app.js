@@ -15,6 +15,7 @@ const els = {
   themeToggle: document.getElementById('themeToggle'),
   chips: document.querySelectorAll('.chip[data-minutes]'),
   customInput: document.getElementById('customMinutes'),
+  customChip: document.querySelector('.chip-custom'),
   resetBtn: document.getElementById('resetBtn'),
 };
 
@@ -122,6 +123,7 @@ function setDuration(minutes, fromCustom = false) {
   els.chips.forEach((c) => {
     c.classList.toggle('is-active', !fromCustom && Number(c.dataset.minutes) === m);
   });
+  els.customChip.classList.toggle('is-active', fromCustom);
   reset();
 }
 
