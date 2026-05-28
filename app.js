@@ -40,7 +40,7 @@ function render() {
   els.time.textContent = format(state.remainingMs);
   const totalMs = state.totalSeconds * 1000;
   const fraction = totalMs > 0 ? state.remainingMs / totalMs : 0;
-  els.dialProgress.style.strokeDashoffset = String(CIRCUMFERENCE * (1 - fraction));
+  els.dialProgress.style.strokeDashoffset = String(-CIRCUMFERENCE * (1 - fraction));
 }
 
 // ----- Loop (rAF, drift-free via wall clock) -----
